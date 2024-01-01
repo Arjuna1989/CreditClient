@@ -1,0 +1,278 @@
+﻿@{
+    ViewBag.Title = "Credit Upload";
+}
+<div id="loader" class="preloader-area">
+    <div class="spinner-gears"></div>
+</div>
+<div id="content" ng-controller="CreditIndex" ng-init="Init('@ViewBag.LoggedUser.AgentId','@ViewBag.LoggedUser.CountryCode')">
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+            <h1 class="page-title txt-color-blueDark">
+                <i class="fa fa-money" aria-hidden="true"></i>
+                Payment receipt upload
+            </h1>
+        </div>
+    </div>
+
+    <section id="widget-grid" class="">
+        <!-- row -->
+        <div class="row">
+            <!-- NEW WIDGET START -->
+            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-0" data-widget-colorbutton="false" data-widget-editbutton="false">
+                    <header>
+                        <ul id="widget-tab-1" class="nav nav-tabs pull-left">
+                            <li class="active">
+                                <a data-toggle="tab" href="#cr1"> <i class="fa fa-university"></i> <span class="hidden-mobile hidden-tablet">Bank Deposite</span> </a>
+                            </li>
+                            <li>
+                                <a data-toggle="tab" href="#cr2"> <i class="fa fa-credit-card"></i> <span class="hidden-mobile hidden-tablet"> Credit Card Payment</span></a>
+                            </li>
+                            <li>
+                                <a data-toggle="tab" href="#cr3"> <i class="fa fa-book"></i> <span class="hidden-mobile hidden-tablet"> Cheque Payment</span></a>
+                            </li>
+                        </ul>
+                    </header>
+                    <div>
+                        <div class="widget-body">
+                            <div class="tab-content padding-10">
+                                <div class="tab-pane fade in active" id="cr1">
+                                    <form name="creditCurrencyUpdate" class="form-horizontal" novalidate>
+                                        <fieldset>
+
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Amount</label>
+                                                <div class="col-md-4">
+                                                    <input type="number" class="form-control" ng-model="CreditUpdateLog.Cash" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Currency Code</label>
+                                                <div class="col-md-4">
+                                                    <select class="form-control" id="crCurrency" ng-options="credit as credit.Currency for credit in CreditCurrency" ng-model="CreditMaper" ng-change="CreditMap(CreditMaper)" required></select>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Bank Name</label>
+                                                <div class="col-md-4">
+                                                    <select class="form-control" ng-options="bank.BankName as bank.BankName for bank in BankList" ng-model="CreditUpdateLog.BankName" required></select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Reference Number</label>
+                                                <div class="col-md-4">
+                                                    <input type="text" class="form-control" ng-model="CreditUpdateLog.RefNumber" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Receipt</label>
+                                                <div class="col-md-4">
+                                                    <span class="input-group-btn" style="width:100% ; float:left">
+                                                        <span class="btn btn-default btn-file" style="width:100%">
+                                                            <input type="file" id="fileInput" ng-model="Files" upload-files onchange="this.parentNode.nextSibling.value = this.value" style="width:100%">
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-2 control-label">Remarks</label>
+                                                <div class="col-md-4">
+                                                    <textarea ng-model="CreditUpdateLog.Description" class="form-control" required></textarea>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+
+
+                                        <div class="form-actions">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <button type="submit" class="btn btn-success pull-right" ng-click="CreateCreditUpdateLog(CreditUpdateLog)" ng-disabled="!creditCurrencyUpdate.$valid">
+                                                        <i class="fa fa-check"></i> Submit
+                                                    </button>
+                                                    <span ng-show="IsSaveClicked" class="save-msg margin-right-10">Saving please wait...</span>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="alert alert-success fade in" ng-show="IsSuccessfullySaved">
+                                            <button class="close" ng-click="CloseAlert()">
+                                                ×
+                                            </button>
+                                            <i class="fa-fw fa fa-check"></i>
+                                            The receipt saved successfully.
+
+                                        </div>
+
+                                        <div class="alert alert-danger fade in" ng-show="IsError">
+                                            <button class="close" ng-click="CloseAlert()">
+                                                ×
+                                            </button>
+                                            <i class="fa-fw fa fa-check"></i>
+                                            The receipt saving error.
+                                        </div>
+                                        <div class="alert alert-success fade in" ng-show="IsSuccessfullyUpdated">
+                                            <button class="close" ng-click="CloseAlert()">
+                                                ×
+                                            </button>
+                                            <i class="fa-fw fa fa-check"></i>
+                                            The receipt updated successfully.
+                                        </div>
+                                        <table id="datatable_col_reorder" ng-show="AllLogs.length != null" class="table table-striped table-bordered table-hover" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th style="text-align:center">Description</th>
+                                                    <th style="text-align:center">Amount</th>
+                                                    <th style="text-align:center">Status</th>
+                                                    <th style="text-align:center">Bank Name</th>
+                                                    <th style="text-align:center">Reference Number</th>
+                                                    <th style="text-align:center">Date</th>
+                                                    <th with="30px">View Receipt</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="logs in AllLogs">
+                                                    <td>{{logs.Description}}</td>
+                                                    <td align="right">{{logs.Cash|currency:logs.Currency}}</td>
+                                                    <td ng-style="{'background-color':(logs.Status?'#76E86A':'#F95E5E')}">{{logs.Status?'Processed':'Pending'}}</td>
+                                                    <td>{{logs.BankName}}</td>
+                                                    <td>{{logs.RefNumber}}</td>
+                                                    <td>{{logs.Date| date:date-format}}</td>
+                                                    <td>
+                                                        <a ng-click="UpdateCreditCurrency(logs)" class="btn btn-info btn-outline btn-circle m-r-5" data-toggle="tooltip" data-placement="top" title="Edit" ng-show="logs.Status==false">
+                                                            <i class="fa fa-pencil"></i>
+                                                        </a>
+                                                        <a ng-href="{{logs.ReciptPath}}" target="_blank" class="btn btn-success btn-outline btn-circle m-r-5" data-toggle="tooltip" data-placement="top" ng-disabled="!logs.ImgName" title="View Receipt">
+                                                            <span class="glyphicon glyphicon-eye-open"></span>
+                                                        </a>
+                                                        <a ng-click="DeleteCreditUpdateLog(logs.Id)" class="btn btn-success btn-outline btn-circle m-r-5" data-toggle="tooltip" data-placement="top" title="Delete Recipt" ng-show="logs.Status==false">
+                                                            <i class="fa fa-trash-o" aria-hidden="true"></i>
+
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </form>
+
+                                    <div ng-show="AllLogs.length==null">
+                                        <blockquote>
+                                            <small> <cite>- No records found -</cite></small>
+                                        </blockquote>
+                                    </div>
+
+                                </div>
+                                <!-- end widget -->
+                                <div class="tab-pane fade in active" id="cr2">
+                                    <form name="frmCreditCard" class="form-horizontal" novalidate></form>
+                                    <!-- end widget -->
+                                </div>
+                                <!-- end widget -->
+                                <div class="tab-pane fade in active" id="cr3">
+                                    <form name="frmBankDeposite" class="form-horizontal" novalidate></form>
+                                    <!-- end widget -->
+                                </div>
+                                <!-- end widget -->
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+            </article>
+<!-- WIDGET END -->
+        </div>
+<!-- end row -->
+    </section>
+
+<div class="modal fade" id="CreditCurrencyUpdate" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">&times;</button>
+                <center> <h4 class="modal-title"><b>Update Credit </b></h4> </center>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" name="frmCreditCurrency">
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Currency</label>
+                            <div class="col-md-8">
+                                <select class="form-control" ng-options="credit as credit.Currency for credit in CreditCurrency" ng-model="CreditMaperUpdate" ng-change="CreditMapUpdate(CreditMaperUpdate)" required></select>
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Amount</label>
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-1">
+                                        <label class="control-label pull-right"><em>{{CreditUpdate.Currency}}</em> </label>
+                                    </div>
+                                    <div class="col-md-11">
+                                        <input class="form-control" type="number" ng-model="CreditUpdate.Cash" required />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Bank Name</label>
+                            <div class="col-md-8">
+                                <select class="form-control" ng-options="bank.BankName as bank.BankName for bank in BankList" ng-model="CreditUpdate.BankName" required></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Reference Number</label>
+                            <div class="col-md-8">
+                                <input type="text" ng-model="CreditUpdate.RefNumber" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Recipt</label>
+                            <div class="col-md-8">
+                                <span class="input-group-btn" style="width:100% ; float:left">
+                                    <span class="btn btn-default btn-file" style="width:100%">
+                                        <input type="file" id="fileInput" ng-model="Files" upload-files onchange="this.parentNode.nextSibling.value = this.value" style="width:100%">
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">Remarks</label>
+                            <div class="col-md-8">
+                                <textarea ng-model="CreditUpdate.Description" class="form-control" required></textarea>
+                            </div>
+                        </div>
+
+                    </fieldset>
+
+                    <div class="form-actions">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button class="btn btn-default" data-dismiss="modal">
+                                    Cancel
+                                </button>
+                                <button class="btn btn-primary" type="submit" ng-click="UpdateCredit(CreditUpdate)" ng-disabled="!frmCreditCurrency.$valid">
+                                    <i class="fa fa-save"></i>
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+</div>
+
+@section pagespecific{
+    <script src="~/Scripts/commercepromote/controllers/credit.index.controller.js"></script>
+
+}
