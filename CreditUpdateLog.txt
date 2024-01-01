@@ -1,0 +1,40 @@
+USE [CPDB]
+GO
+
+/****** Object:  Table [dbo].[CreditUpdateLog]    Script Date: 11/13/2018 5:08:33 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[CreditUpdateLog](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[AgentID] [int] NULL,
+	[ImgName] [nvarchar](max) NULL,
+	[ReciptPath] [nvarchar](max) NULL,
+	[Description] [nvarchar](max) NULL,
+	[Credit] [float] NULL,
+	[Status] [bit] NULL,
+	[CreditCurrencyId] [int] NULL,
+	[BankName] [nvarchar](50) NULL,
+	[Date] [datetime] NULL,
+	[Cash] [float] NULL,
+	[RefNumber] [nvarchar](50) NULL,
+ CONSTRAINT [PK_CreditCurrencySlip] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[CreditUpdateLog]  WITH CHECK ADD  CONSTRAINT [FK_CreditUpdateLog_CreditCurrency] FOREIGN KEY([CreditCurrencyId])
+REFERENCES [dbo].[CreditCurrency] ([Id])
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[CreditUpdateLog] CHECK CONSTRAINT [FK_CreditUpdateLog_CreditCurrency]
+GO
+
+
+
